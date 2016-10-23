@@ -8,50 +8,81 @@
       <column type="gchararray"/>
     </columns>
   </object>
+  <object class="GtkListStore" id="ls_ingredients">
+    <columns>
+      <!-- column-name Zutat -->
+      <column type="gchararray"/>
+      <!-- column-name Menge -->
+      <column type="gchararray"/>
+    </columns>
+  </object>
   <object class="GtkListStore" id="ls_recipes">
     <columns>
       <!-- column-name recipe -->
       <column type="gchararray"/>
     </columns>
-    <data>
-      <row>
-        <col id="0" translatable="yes">testkuchen</col>
-      </row>
-    </data>
   </object>
   <object class="GtkWindow" id="main">
     <property name="width_request">600</property>
+    <property name="height_request">680</property>
     <property name="can_focus">False</property>
     <signal name="show" handler="show_main" swapped="no"/>
     <child>
       <object class="GtkPaned" id="pane">
         <property name="visible">True</property>
         <property name="can_focus">True</property>
-        <property name="position">150</property>
+        <property name="position">180</property>
         <property name="position_set">True</property>
         <property name="wide_handle">True</property>
         <child>
-          <object class="GtkTreeView" id="lv_recipe">
+          <object class="GtkBox">
             <property name="visible">True</property>
-            <property name="can_focus">True</property>
-            <property name="model">ls_recipes</property>
-            <child internal-child="selection">
-              <object class="GtkTreeSelection">
-                <signal name="changed" handler="load_recipe" swapped="no"/>
+            <property name="can_focus">False</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkSearchEntry">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="margin_bottom">5</property>
+                <property name="primary_icon_name">edit-find-symbolic</property>
+                <property name="primary_icon_activatable">False</property>
+                <property name="primary_icon_sensitive">False</property>
               </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
             </child>
             <child>
-              <object class="GtkTreeViewColumn" id="lv_column">
-                <property name="title" translatable="yes">Rezepte</property>
-                <property name="clickable">True</property>
-                <property name="sort_indicator">True</property>
+              <object class="GtkTreeView" id="lv_recipe">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="model">ls_recipes</property>
+                <child internal-child="selection">
+                  <object class="GtkTreeSelection">
+                    <signal name="changed" handler="load_recipe" swapped="no"/>
+                  </object>
+                </child>
                 <child>
-                  <object class="GtkCellRendererText"/>
-                  <attributes>
-                    <attribute name="text">0</attribute>
-                  </attributes>
+                  <object class="GtkTreeViewColumn" id="lv_column">
+                    <property name="title" translatable="yes">Rezepte</property>
+                    <property name="clickable">True</property>
+                    <property name="sort_indicator">True</property>
+                    <child>
+                      <object class="GtkCellRendererText"/>
+                      <attributes>
+                        <attribute name="text">0</attribute>
+                      </attributes>
+                    </child>
+                  </object>
                 </child>
               </object>
+              <packing>
+                <property name="expand">True</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
             </child>
           </object>
           <packing>
@@ -63,22 +94,25 @@
           <object class="GtkBox" id="box1">
             <property name="visible">True</property>
             <property name="can_focus">False</property>
-            <property name="margin_left">5</property>
-            <property name="margin_right">5</property>
-            <property name="margin_top">5</property>
-            <property name="margin_bottom">5</property>
+            <property name="margin_left">10</property>
+            <property name="margin_right">10</property>
+            <property name="margin_top">10</property>
+            <property name="margin_bottom">10</property>
             <property name="orientation">vertical</property>
             <property name="spacing">5</property>
             <child>
               <object class="GtkBox" id="Menueleiste">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="homogeneous">True</property>
                 <child>
                   <object class="GtkButton" id="button1">
-                    <property name="label" translatable="yes">Neu</property>
+                    <property name="label">gtk-new</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="use_stock">True</property>
+                    <property name="always_show_image">True</property>
                     <signal name="clicked" handler="add_recipe" swapped="no"/>
                   </object>
                   <packing>
@@ -88,24 +122,13 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkButton" id="button2">
-                    <property name="label" translatable="yes">Öffnen</property>
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
                   <object class="GtkButton" id="button3">
-                    <property name="label" translatable="yes">Speichern</property>
+                    <property name="label">gtk-save</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="use_stock">True</property>
+                    <property name="always_show_image">True</property>
                     <signal name="clicked" handler="save_recipe" swapped="no"/>
                   </object>
                   <packing>
@@ -116,10 +139,12 @@
                 </child>
                 <child>
                   <object class="GtkButton" id="button4">
-                    <property name="label" translatable="yes">Löschen</property>
+                    <property name="label">gtk-delete</property>
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
+                    <property name="use_stock">True</property>
+                    <property name="always_show_image">True</property>
                     <signal name="clicked" handler="delete_recipe" swapped="no"/>
                   </object>
                   <packing>
@@ -233,12 +258,12 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkListBox" id="listbox1">
+                  <object class="GtkEntry" id="txt_tags">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can_focus">True</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
@@ -269,30 +294,45 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkListBox" id="listbox2">
+                  <object class="GtkTreeView">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
+                    <property name="can_focus">True</property>
+                    <property name="model">ls_ingredients</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection"/>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn">
+                        <property name="title" translatable="yes">Menge</property>
+                        <child>
+                          <object class="GtkCellRendererText"/>
+                          <attributes>
+                            <attribute name="text">1</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkTreeViewColumn">
+                        <property name="title" translatable="yes">Zutat</property>
+                        <child>
+                          <object class="GtkCellRendererText"/>
+                          <attributes>
+                            <attribute name="text">0</attribute>
+                          </attributes>
+                        </child>
+                      </object>
+                    </child>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
-                <child>
-                  <object class="GtkListBox" id="listbox3">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
-                  </packing>
-                </child>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">3</property>
               </packing>
@@ -305,7 +345,7 @@
                   <object class="GtkLabel" id="label5">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="label" translatable="yes">Arbeitsschritte</property>
+                    <property name="label" translatable="yes">Beschreibung</property>
                     <property name="width_chars">13</property>
                     <property name="xalign">0</property>
                   </object>
@@ -316,19 +356,19 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkEntry" id="entry2">
+                  <object class="GtkTextView" id="txt_description">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                   </object>
                   <packing>
-                    <property name="expand">False</property>
+                    <property name="expand">True</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
+                <property name="expand">True</property>
                 <property name="fill">True</property>
                 <property name="position">4</property>
               </packing>
@@ -362,7 +402,7 @@
                         <property name="can_focus">True</property>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>
@@ -398,7 +438,7 @@
                         <property name="can_focus">True</property>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">1</property>
                       </packing>

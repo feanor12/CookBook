@@ -12,15 +12,23 @@ from sqlalchemy.orm import sessionmaker,relationship
 #--------------------------------------------------------
 Base = declarative_base()
 
+a_table_tags = Table('a_recipe_tags', Base.metadata,
+    Column('recipes_id', Integer, ForeignKey('recipes.id')),
+    Column('tags_id', Integer, ForeignKey('tags.id'))
+)
+
 class Recipe(Base):
     __tablename__ = "recipes"
     id = Column(Integer,primary_key=True)
     name = Column(String,default="Neues Rezept",unique=True)
-    baking_time = Column(String,default="3")
-    baking_temp = Column(String,default="3")
+    baking_time = Column(String,default="")
+    baking_temp = Column(String,default="")
+    description = Column(String,default="")
     picture = Column(LargeBinary)
     category_id = Column(Integer, ForeignKey('categories.id'))
     category = relationship("Category")
+    tags = relationship("Tags",secondary=a_table_tags)
+
 
 class Category(Base):
     __tablename__ = "categories"
@@ -85,13 +93,41 @@ class Handler:
         temp = builder.get_object("txt_temp")
         temp.set_text(current_recipe.baking_temp)
         cat = builder.get_object("txt_cat")
-        cat.set_text(current_recipe.category.name)
+        if current_recipe.category:
+            cat.set_text(current_recipe.category.name)
+        else:
+            cat.set_text("")
 
+        tags = builder.get_object("txt_tags")
+        if current_recipe.tags:
+            tags.set_text(",".join(map(lambda t:t.name,current_recipe.tags)))
+        else:
+            tags.set_text("")
+
+        desc = builder.get_object("txt_description")
+        desc.get_buffer().set_text(current_recipe.description)
 
     def save_recipe(self,button):
         name = builder.get_object("txt_name")
         time = builder.get_object("txt_time")
         temp = builder.get_object("txt_temp")
+        desc = builder.get_object("txt_description")
+        dbuf = desc.get_buffer()
+        current_recipe.description = dbuf.get_text(dbuf.get_start_iter(),dbuf.get_end_iter(),False)
+
+        tags = builder.get_object("txt_tags")
+        tags = tags.get_text()
+        tags = tags.split(",")
+        current_recipe.tags.clear()
+        for tag in tags:
+            db_tag = session.query(Tags).filter(Tags.name==tag).first()
+            if db_tag:
+                current_recipe.tags.append(db_tag)
+            else:
+                new_tag = Tags(name=tag)
+                session.add(new_tag)
+                current_recipe.tags.append(new_tag)
+
         cat = builder.get_object("txt_cat")
         cat_txt = cat.get_text()
         if cat_txt:

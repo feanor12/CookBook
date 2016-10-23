@@ -5,8 +5,11 @@ gi.require_version('Gtk', '3.0')
 from gi.repository import Gtk
 from sqlalchemy import *
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker,relationship
 
+#--------------------------------------------------------
+# Models
+#--------------------------------------------------------
 Base = declarative_base()
 
 class Recipe(Base):
@@ -16,6 +19,24 @@ class Recipe(Base):
     baking_time = Column(String,default="3")
     baking_temp = Column(String,default="3")
     picture = Column(LargeBinary)
+    category_id = Column(Integer, ForeignKey('categories.id'))
+    category = relationship("Category")
+
+class Category(Base):
+    __tablename__ = "categories"
+    id = Column(Integer,primary_key=True)
+    name = Column(String,unique=True)
+
+class Tags(Base):
+    __tablename__ = "tags"
+    id = Column(Integer,primary_key=True)
+    name = Column(String,default="")
+
+class Ingredients(Base):
+    __tablename__ = "ingredients"
+    id = Column(Integer,primary_key=True)
+    name = Column(String)
+    amount = Column(String, default="")
 
 class RecipeRow(Gtk.ListBoxRow):
     def __init__(self,recipe):
@@ -37,10 +58,17 @@ class Handler:
         for r in recipes:
             liste.add(RecipeRow(r))
         liste.show_all()
+        ls_cat = builder.get_object("ls_cat")
+        cats = session.query(Category).all()
+        ls_cat.clear()
+        for c in cats:
+            ls_cat.append([c.name])
 
 
 
     def load_recipe(self,box,row):
+        if not row:
+            return
         global current_recipe
         current_recipe = row.recipe
         name = builder.get_object("txt_name")
@@ -49,12 +77,25 @@ class Handler:
         time.set_text(current_recipe.baking_time)
         temp = builder.get_object("txt_temp")
         temp.set_text(current_recipe.baking_temp)
+        cat = builder.get_object("txt_cat")
+        cat.set_text(current_recipe.category.name)
 
 
     def save_recipe(self,button):
         name = builder.get_object("txt_name")
         time = builder.get_object("txt_time")
         temp = builder.get_object("txt_temp")
+        cat = builder.get_object("txt_cat")
+        cat_txt = cat.get_text()
+        if cat_txt:
+            db_cat = session.query(Category).filter(Category.name==cat_txt).first()
+            if db_cat:
+                current_recipe.category = db_cat
+            else:
+                new_cat = Category(name = cat_txt)
+                session.add(new_cat)
+                current_recipe.category = new_cat
+
         current_recipe.name = name.get_text()
         current_recipe.baking_temp = temp.get_text()
         current_recipe.baking_time = time.get_text()
@@ -62,6 +103,10 @@ class Handler:
         self.update()
 
     def show_main(self,widget):
+        cbt_cat = builder.get_object("cbt_cat")
+        ls_cat = builder.get_object("ls_cat")
+        cbt_cat.set_model(ls_cat)
+
         self.update()
 
     def delete_recipe(self,button):

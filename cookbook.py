@@ -15,7 +15,7 @@ Base = declarative_base()
 class Recipe(Base):
     __tablename__ = "recipes"
     id = Column(Integer,primary_key=True)
-    name = Column(String,default="Neues Rezept")
+    name = Column(String,default="Neues Rezept",unique=True)
     baking_time = Column(String,default="3")
     baking_temp = Column(String,default="3")
     picture = Column(LargeBinary)
@@ -46,18 +46,21 @@ class RecipeRow(Gtk.ListBoxRow):
 
 class Handler:
     def add_recipe(self,button):
-        recipe = Recipe()
-        session.add(recipe)
-        session.commit()
+        try:
+            recipe = Recipe()
+            session.add(recipe)
+            session.commit()
+        except:
+            session.rollback()
         self.update()
 
     def update(self):
-        liste = builder.get_object("rezeptliste")
-        list(map(liste.remove,liste.get_children()))
+        liste = builder.get_object("ls_recipes")
+        liste.clear()
         recipes = session.query(Recipe).all()
         for r in recipes:
-            liste.add(RecipeRow(r))
-        liste.show_all()
+            liste.append([r.name])
+
         ls_cat = builder.get_object("ls_cat")
         cats = session.query(Category).all()
         ls_cat.clear()
@@ -66,11 +69,15 @@ class Handler:
 
 
 
-    def load_recipe(self,box,row):
-        if not row:
+    def load_recipe(self,selection):
+        model,item = selection.get_selected()
+        if not item:
+            return
+        recipe_name = model.get_value(item,0)
+        if not recipe_name:
             return
         global current_recipe
-        current_recipe = row.recipe
+        current_recipe = session.query(Recipe).filter(Recipe.name == recipe_name).one()
         name = builder.get_object("txt_name")
         name.set_text(current_recipe.name)
         time = builder.get_object("txt_time")

@@ -8,6 +8,17 @@
       <column type="gchararray"/>
     </columns>
   </object>
+  <object class="GtkListStore" id="ls_recipes">
+    <columns>
+      <!-- column-name recipe -->
+      <column type="gchararray"/>
+    </columns>
+    <data>
+      <row>
+        <col id="0" translatable="yes">testkuchen</col>
+      </row>
+    </data>
+  </object>
   <object class="GtkWindow" id="main">
     <property name="width_request">600</property>
     <property name="can_focus">False</property>
@@ -20,10 +31,28 @@
         <property name="position_set">True</property>
         <property name="wide_handle">True</property>
         <child>
-          <object class="GtkListBox" id="rezeptliste">
+          <object class="GtkTreeView" id="lv_recipe">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <signal name="row-selected" handler="load_recipe" swapped="no"/>
+            <property name="can_focus">True</property>
+            <property name="model">ls_recipes</property>
+            <child internal-child="selection">
+              <object class="GtkTreeSelection">
+                <signal name="changed" handler="load_recipe" swapped="no"/>
+              </object>
+            </child>
+            <child>
+              <object class="GtkTreeViewColumn" id="lv_column">
+                <property name="title" translatable="yes">Rezepte</property>
+                <property name="clickable">True</property>
+                <property name="sort_indicator">True</property>
+                <child>
+                  <object class="GtkCellRendererText"/>
+                  <attributes>
+                    <attribute name="text">0</attribute>
+                  </attributes>
+                </child>
+              </object>
+            </child>
           </object>
           <packing>
             <property name="resize">False</property>

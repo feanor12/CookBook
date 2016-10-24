@@ -74,11 +74,28 @@ class Handler:
         self.update()
 
     def update(self):
+        global current_recipe
         liste = builder.get_object("ls_recipes")
-        liste.clear()
         recipes = session.query(Recipe).all()
+        for name in liste:
+            found = False
+            for r in recipes:
+                if r.name == name[0]:
+                    found == True
+            if not found:
+                liste.remove(name.iter)
         for r in recipes:
-            liste.append([r.name])
+            found = False
+            for name in liste:
+                if name[0] == r.name:
+                    found=True
+            if not found:
+                liste.append([r.name])
+        for row in liste:
+            if row[0] == current_recipe.name:
+                print(row[0])
+                selection = builder.get_object("lsel_recipes")
+                selection.select_iter(row.iter)
 
         ls_cat = builder.get_object("ls_cat")
         cats = session.query(Category).all()
@@ -86,7 +103,9 @@ class Handler:
         for c in cats:
             ls_cat.append([c.name])
 
-    def load_recipe(self, selection):
+    def load_recipe(self,tv,tp,ti):
+        print("load")
+        selection = tv.get_selection()
         model, item = selection.get_selected()
         if not item:
             return
@@ -117,6 +136,7 @@ class Handler:
         desc.get_buffer().set_text(current_recipe.description)
 
     def save_recipe(self, button):
+        global current_recipe
         name = builder.get_object("txt_name")
         time = builder.get_object("txt_time")
         temp = builder.get_object("txt_temp")

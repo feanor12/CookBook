@@ -127,7 +127,7 @@ class Handler:
         tags = builder.get_object("txt_tags")
         tags = tags.get_text()
         tags = tags.split(",")
-        current_recipe.tags.clear()
+        del current_recipe.tags[:]
         for tag in tags:
             db_tag = session.query(Tags).filter(Tags.name == tag).first()
             if db_tag:
@@ -150,7 +150,6 @@ class Handler:
 
         
         ingredients = builder.get_object("ls_ingredients")
-        ingredients.foreach(print)
 
         current_recipe.name = name.get_text()
         current_recipe.baking_temp = temp.get_text()

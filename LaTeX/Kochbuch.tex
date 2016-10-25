@@ -1,0 +1,87 @@
+\documentclass[%
+a4paper,
+%twoside,
+11pt
+]{article} 
+
+% encoding, font, language
+\usepackage[T1]{fontenc}
+\usepackage[latin1]{inputenc}
+\usepackage{lmodern}
+\usepackage[ngerman]{babel}
+\usepackage{graphicx}
+\usepackage{nicefrac}
+
+
+\usepackage[
+    nowarnings,
+    %myconfig 
+]
+{xcookybooky}
+ 
+
+\DeclareRobustCommand{\textcelcius}{\ensuremath{^{\circ}\mathrm{C}}}
+
+
+\setcounter{secnumdepth}{1}
+\renewcommand*{\recipesection}[2][]
+{%
+    \subsection[#1]{#2}
+}
+\renewcommand{\subsectionmark}[1]
+{% no implementation to display the section name instead
+}
+%\setRecipeColors{recipename=blue}
+
+\usepackage{hyperref}    % must be the last package
+\hypersetup{%
+%    pdfauthor            = {Sven Harder},
+    pdftitle             = {Mamas Kochbuch},
+    pdfsubject           = {Recipes},
+    pdfkeywords          = {example, recipes, cookbook, xcookybooky},
+    pdfstartview         = {FitV},
+    pdfview              = {FitH},
+    pdfpagemode          = {UseNone}, % Options; UseNone, UseOutlines
+    bookmarksopen        = {true},
+    pdfpagetransition    = {Glitter},
+    colorlinks           = {true},
+    linkcolor            = {black},
+    urlcolor             = {blue},
+    citecolor            = {black},
+    filecolor            = {black},
+}
+
+\hbadness=10000 % Ignore underfull boxes
+
+\begin{document}
+
+\title{Mamas Kochbuch}
+
+\maketitle
+
+\setHeadlines
+{% translation
+    inghead = Zutaten,
+    prephead = Zubereitung,
+    hinthead = Tipp,
+    continuationhead = Fortsetzung,
+    continuationfoot = Fortsetzung auf n\"achster Seite,
+    portionvalue = Personen,
+}
+
+
+\tableofcontents
+
+\vspace{5em}
+\newpage
+\section{+Kategorie}  
+
+\begin{center}
+\includegraphics[width=0.8\textwidth]{+Kategoriefoto}
+\end{center}
+
+% % % Hier kommen die +Kategorie-Rezepte rein % % %
+\input{+Name}
+%\newpage
+
+\end{document} 

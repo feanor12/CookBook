@@ -32,7 +32,7 @@ class Recipe(Base):
     description = Column(String, default="")
     picture = Column(LargeBinary)
     category_id = Column(Integer, ForeignKey('categories.id'))
-    category = relationship("Category")
+    category = relationship("Category",backref="recipes")
     tags = relationship("Tags", secondary=a_table_tags)
     ingredients = relationship("Ingredients", secondary=a_table_ingredients)
 
@@ -207,6 +207,41 @@ class Handler:
 
     def edited_amount(*params):
         print(params)
+
+    def pdf(self,button):
+        with open("Template/Kochbuch.tex") as f:
+            text = f.read()
+
+        cats = session.query(Category).all()
+        chapters = ""
+        for cat in cats:
+            chapter = """
+            \section{{{name}}}
+            """.format(name = cat.name)
+            for recipe in cat.recipes:
+                chapter += "\input{{{name}.tex}}\n".format(name = recipe.name)
+            chapters += chapter
+
+        text = text.replace("+Chapters",chapters)
+        with open("build/Kochbuch.tex","w") as f:
+            f.write(text)
+
+        with open("Template/Rezept.tex") as f:
+            text = f.read()
+            
+        for cat in cats:
+            for recipe in cat.recipes:
+
+                r_text = text.replace("+Name",recipe.name)
+                r_text = r_text.replace("+Backzeit",recipe.baking_time)
+                r_text = r_text.replace("+Temperatur",recipe.baking_temp)
+                steps = ""
+                for step in recipe.description.split("\n"):
+                    steps += "\step "+step
+                r_text = r_text.replace("+Beschreibung",steps)
+                tags = ",".join(map(lambda x: x.name,recipe.tags))
+                with open("build/{0}.tex".format(recipe.name),"w") as f:
+                    f.write(r_text)
 
 
 

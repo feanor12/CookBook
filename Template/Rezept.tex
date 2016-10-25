@@ -1,0 +1,39 @@
+\newpage
+
+\begin{recipe}
+[ % Optionale Eingaben
+    bakingtime={+Backzeit},
+    bakingtemperature={+Temperatur \textcelcius}, % C nicht übergeben
+%    portion = {+Portionen} % Anzahl der Portionen noch nicht implementiert
+]
+{+Name}
+    
+    \graph
+    {% Bilder        
+    
+	    big=+Foto1 		% großes (längeres) Bild
+%        small=+Foto2,    % kleines Bild noch nicht implementiert
+
+    }
+    
+    \ingredients
+    {% Zutaten
+	    +Menge & +Zutat \\
+		\ \\ 					% Leerzeile zur Trennung (z.B. Boden u. Creme)
+		+Menge & +Zutat \\
+    }
+    
+        
+    
+    
+    \preparation
+    { % Zubereitung
+        +Beschreibung 
+    }
+    
+%    \hint
+%    {% Tipp
+%        +Tipp  % Tipp noch nicht implementiert
+%    }
+
+\end{recipe}
